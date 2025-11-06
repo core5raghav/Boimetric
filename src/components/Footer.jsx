@@ -1,52 +1,55 @@
 import React from 'react';
+import { Fingerprint } from 'lucide-react';
 
-export default function Footer({ navigate }) {
+const Footer = ({ navigate }) => {
   return (
-    <>
-      <footer className="bg-gray-100 py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-12">
-            <div>
-              <img src="https://www.timewatchindia.com/static/media/logo.ca8f78e2.png" alt="TimeWatch" className="h-12 mb-4" />
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-yellow-500 text-2xl">★★★★★</span>
-                <span className="font-bold">4.8</span>
+    <footer className="bg-gray-900 text-white py-12">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+                <Fingerprint className="text-white" size={24} />
               </div>
-              <p className="text-sm text-gray-600">Reviews 1200+</p>
+              <span className="text-lg font-bold">TST Technologies</span>
             </div>
-            
-            <div>
-              <h4 className="font-bold mb-4 text-gray-800">Quick Links</h4>
-              <ul className="space-y-2 text-sm">
-                <li><button onClick={() => navigate('home')} className="text-gray-600 hover:text-red-600">Home</button></li>
-                <li><button onClick={() => navigate('about')} className="text-gray-600 hover:text-red-600">About Us</button></li>
-                <li><button onClick={() => navigate('contact')} className="text-gray-600 hover:text-red-600">Contact Us</button></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-bold mb-4 text-gray-800">Policies</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-gray-600 hover:text-red-600">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-red-600">Terms & Conditions</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-bold mb-4 text-gray-800">Contact Info</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><strong>Email:</strong> sales@timewatchindia.com</li>
-                <li><strong>Contact:</strong> +91-95999 53923</li>
-                <li><strong>Address:</strong> D-162, Okhla Phase - I, New Delhi - 110020</li>
-              </ul>
-            </div>
+            <p className="text-gray-400 text-sm">
+              Leading provider of biometric security solutions. Trusted by 580+ organizations.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">Products</h3>
+            <ul className="space-y-2 text-sm">
+              <li><button onClick={() => navigate('product-list', 'biometric-cctv', 'fingerprint')} className="text-gray-400 hover:text-white">Fingerprint</button></li>
+              <li><button onClick={() => navigate('product-list', 'biometric-cctv', 'face-recognition')} className="text-gray-400 hover:text-white">Face Recognition</button></li>
+              <li><button onClick={() => navigate('product-list', 'biometric-cctv', 'rfid-reader')} className="text-gray-400 hover:text-white">RFID</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">Company</h3>
+            <ul className="space-y-2 text-sm">
+              <li><button onClick={() => navigate('about')} className="text-gray-400 hover:text-white">About</button></li>
+              <li><button onClick={() => navigate('contact')} className="text-gray-400 hover:text-white">Contact</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4">Support</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="#" className="text-gray-400 hover:text-white">FAQs</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Privacy</a></li>
+            </ul>
           </div>
         </div>
-      </footer>
 
-      <div className="bg-red-600 text-white text-center py-3">
-        <p className="text-sm">TimeWatch © 2025, All Rights Reserved</p>
+        <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+          <p>&copy; 2025 TST Technologies. All rights reserved.</p>
+        </div>
       </div>
-    </>
+    </footer>
   );
-}
+};
+
+export default Footer;

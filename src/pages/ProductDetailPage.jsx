@@ -1,222 +1,235 @@
 import React, { useState } from 'react';
+import { Star, Shield, Check, Minus, Plus, ShoppingCart, Phone } from 'lucide-react';
+import { getProduct } from '../data/productsDatabase';
+import Breadcrumb from '../components/Breadcrumb';
 
-export default function ProductDetailPage({ product, category, subcategory, navigate }) {
+const ProductDetailPage = ({ productId, categoryId, productTypeId, navigate }) => {
+  const product = getProduct(productId);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Product not found</h2>
-          <button 
-            onClick={() => navigate('home')}
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700"
-          >
-            Back to Home
-          </button>
-        </div>
+      <div className="py-20 text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Product not found</h2>
+        <button
+          onClick={() => navigate('home')}
+          className="mt-6 bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700"
+        >
+          Back to Home
+        </button>
       </div>
     );
   }
 
-  const images = product.images || [product.image];
+  const breadcrumbItems = [
+    { label: 'Home', onClick: () => navigate('home') },
+    { label: product.categoryName, onClick: () => navigate('category', categoryId) },
+    { label: product.productTypeName, onClick: () => navigate('product-list', categoryId, productTypeId) },
+    { label: product.shortName || product.name }
+  ];
+
+  const handleAddToCart = () => {
+    alert(`Added ${quantity} x ${product.name} to cart!`);
+  };
+
+  const handleContactUs = () => {
+    navigate('contact');
+  };
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Breadcrumb */}
-      <div className="bg-gray-50 py-4 border-b">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <button onClick={() => navigate('home')} className="hover:text-red-600">Home</button>
-            <span>›</span>
-            <button onClick={() => navigate(category.id)} className="hover:text-red-600">{category.name}</button>
-            <span>›</span>
-            <button onClick={() => navigate(category.id, subcategory.id)} className="hover:text-red-600">{subcategory.name}</button>
-            <span>›</span>
-            <span className="text-gray-800 font-semibold">{product.name}</span>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <Breadcrumb items={breadcrumbItems} />
 
-      {/* Product Details */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Image Gallery */}
-            <div>
-              <div className="bg-gray-50 rounded-lg p-8 mb-4">
-                <img 
-                  src={images[selectedImage]} 
-                  alt={product.name}
-                  className="w-full h-96 object-contain"
-                />
-              </div>
-              
-              {images.length > 1 && (
-                <div className="grid grid-cols-4 gap-4">
-                  {images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={`bg-gray-50 rounded-lg p-4 border-2 transition-all ${
-                        selectedImage === idx ? 'border-red-600' : 'border-transparent hover:border-gray-300'
-                      }`}
-                    >
-                      <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-20 object-contain" />
-                    </button>
-                  ))}
-                </div>
-              )}
+        <div className="grid lg:grid-cols-2 gap-12 mt-8">
+          {/* Left Column - Images */}
+          <div>
+            {/* Main Image */}
+            <div className="mb-4 border-2 border-emerald-500 rounded-2xl overflow-hidden bg-gray-50">
+              <img
+                src={product.images[selectedImage]}
+                alt={product.name}
+                className="w-full h-[500px] object-cover"
+              />
             </div>
 
-            {/* Product Info */}
-            <div>
-              <div className="mb-4">
-                <span className="text-sm text-gray-500">{subcategory.name}</span>
-              </div>
-              
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">{product.name}</h1>
-              
-              {/* Rating */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className={i < product.rating ? 'text-yellow-400 text-xl' : 'text-gray-300 text-xl'}>★</span>
-                  ))}
-                </div>
-                <span className="text-gray-600">({product.reviews || 0} reviews)</span>
-              </div>
-
-              {/* Price */}
-              {product.price && (
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-bold text-red-600">₹{product.price.toLocaleString()}</span>
-                    {product.originalPrice && (
-                      <span className="text-xl text-gray-500 line-through">₹{product.originalPrice.toLocaleString()}</span>
-                    )}
-                  </div>
-                  {product.originalPrice && (
-                    <span className="text-green-600 font-semibold">
-                      Save ₹{(product.originalPrice - product.price).toLocaleString()} 
-                      ({Math.round((1 - product.price / product.originalPrice) * 100)}% OFF)
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Description */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Description</h3>
-                <p className="text-gray-600 leading-relaxed">{product.description || 'High-quality security product from TimeWatch.'}</p>
-              </div>
-
-              {/* Key Features */}
-              {product.features && product.features.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-3">Key Features</h3>
-                  <ul className="space-y-2">
-                    {product.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-gray-600">
-                        <span className="text-green-600 mt-1">✓</span>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Warranty */}
-              {product.warranty && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🛡️</span>
-                    <div>
-                      <p className="font-bold text-gray-800">{product.warranty}</p>
-                      <p className="text-sm text-gray-600">Manufacturer Warranty</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Quantity & Actions */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex items-center border border-gray-300 rounded-lg">
-                  <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-2 hover:bg-gray-100 font-bold text-gray-600"
-                  >
-                    -
-                  </button>
-                  <span className="px-6 py-2 border-x border-gray-300 font-semibold">{quantity}</span>
-                  <button 
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-4 py-2 hover:bg-gray-100 font-bold text-gray-600"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <button className="flex-1 px-8 py-4 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition-colors">
-                  Add to Cart
-                </button>
-                <button 
-                  onClick={() => navigate('contact')}
-                  className="px-8 py-4 border-2 border-red-600 text-red-600 rounded-lg font-bold hover:bg-red-50 transition-colors"
+            {/* Thumbnail Images */}
+            <div className="grid grid-cols-3 gap-4">
+              {product.images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`border-2 rounded-lg overflow-hidden ${
+                    selectedImage === index ? 'border-emerald-500' : 'border-gray-200'
+                  }`}
                 >
-                  Contact Us
+                  <img
+                    src={image}
+                    alt={`${product.name} ${index + 1}`}
+                    className="w-full h-24 object-cover"
+                  />
                 </button>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Specifications */}
-          {product.specifications && (
-            <div className="mt-16">
-              <h2 className="text-3xl font-bold text-gray-800 mb-8">Specifications</h2>
-              <div className="bg-gray-50 rounded-lg p-8">
-                <div className="grid md:grid-cols-2 gap-6">
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="flex border-b border-gray-200 pb-4">
-                      <span className="font-semibold text-gray-700 w-1/2">{key}</span>
-                      <span className="text-gray-600 w-1/2">{value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Right Column - Product Details */}
+          <div>
+            {/* Category Label */}
+            <p className="text-emerald-600 font-semibold mb-2">{product.productTypeName}</p>
 
-          {/* Related Products */}
-          {subcategory.products.filter(p => p.id !== product.id).length > 0 && (
-            <div className="mt-16">
-              <h2 className="text-3xl font-bold text-gray-800 mb-8">Related Products</h2>
-              <div className="grid md:grid-cols-4 gap-6">
-                {subcategory.products.filter(p => p.id !== product.id).slice(0, 4).map(relatedProduct => (
-                  <div 
-                    key={relatedProduct.id}
-                    onClick={() => navigate(category.id, subcategory.id, relatedProduct.id)}
-                    className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-                  >
-                    <div className="h-48 bg-gray-50 flex items-center justify-center p-4">
-                      <img src={relatedProduct.image} alt={relatedProduct.name} className="max-h-full object-contain" />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-bold text-gray-800 mb-2">{relatedProduct.name}</h3>
-                      {relatedProduct.price && (
-                        <p className="text-red-600 font-bold">₹{relatedProduct.price.toLocaleString()}</p>
-                      )}
-                    </div>
+            {/* Product Name */}
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
+
+            {/* Rating */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={20}
+                    className={i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}
+                  />
+                ))}
+              </div>
+              <span className="text-gray-600">({product.reviews} reviews)</span>
+            </div>
+
+            {/* Price */}
+            <div className="mb-6">
+              <div className="flex items-baseline gap-3">
+                <span className="text-5xl font-bold text-red-600">
+                  {product.currency}{product.price.toLocaleString()}
+                </span>
+                {product.originalPrice && (
+                  <span className="text-xl text-gray-500 line-through">
+                    {product.currency}{product.originalPrice.toLocaleString()}
+                  </span>
+                )}
+              </div>
+              {product.discount > 0 && (
+                <p className="text-emerald-600 font-semibold mt-2">
+                  Save {product.currency}{(product.originalPrice - product.price).toLocaleString()} ({product.discount}% OFF)
+                </p>
+              )}
+            </div>
+
+            {/* Description */}
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Description</h3>
+              <p className="text-gray-700 leading-relaxed">{product.description}</p>
+            </div>
+
+            {/* Key Features */}
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Key Features</h3>
+              <div className="space-y-2">
+                {product.features.map((feature, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <Check className="text-emerald-600 flex-shrink-0 mt-0.5" size={20} />
+                    <span className="text-gray-700">{feature}</span>
                   </div>
                 ))}
               </div>
             </div>
-          )}
+
+            {/* Warranty */}
+            {product.warranty && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <Shield className="text-yellow-600" size={32} />
+                  <div>
+                    <p className="font-bold text-gray-900">{product.warranty.period} Warranty</p>
+                    <p className="text-sm text-gray-600">{product.warranty.type}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Quantity Selector */}
+            <div className="mb-6">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-12 h-12 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-100"
+                >
+                  <Minus size={20} />
+                </button>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-20 h-12 text-center border-2 border-gray-300 rounded-lg font-semibold text-lg"
+                />
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-12 h-12 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-100"
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 mb-8">
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-red-600 text-white py-4 rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-lg"
+              >
+                <ShoppingCart size={24} />
+                Add to Cart
+              </button>
+              <button
+                onClick={handleContactUs}
+                className="flex-1 border-2 border-gray-300 text-gray-700 py-4 rounded-lg font-semibold hover:border-emerald-600 hover:text-emerald-600 transition-colors flex items-center justify-center gap-2 text-lg"
+              >
+                <Phone size={24} />
+                Contact Us
+              </button>
+            </div>
+
+            {/* Stock Status */}
+            {product.inStock && (
+              <p className="text-emerald-600 font-semibold">✓ In Stock</p>
+            )}
+          </div>
         </div>
-      </section>
+
+        {/* Specifications Section */}
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">Technical Specifications</h2>
+          <div className="bg-gray-50 rounded-xl p-8 border border-gray-200">
+            <div className="grid md:grid-cols-2 gap-6">
+              {Object.entries(product.specifications).map(([key, value], index) => (
+                <div key={index} className="flex border-b border-gray-300 pb-4">
+                  <span className="font-semibold text-gray-900 w-1/2">{key}</span>
+                  <span className="text-gray-700 w-1/2">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Applications Section */}
+        {product.applications && product.applications.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Applications</h2>
+            <div className="flex flex-wrap gap-3">
+              {product.applications.map((app, index) => (
+                <span
+                  key={index}
+                  className="bg-emerald-100 text-emerald-700 px-6 py-3 rounded-lg font-semibold text-lg"
+                >
+                  {app}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default ProductDetailPage;
